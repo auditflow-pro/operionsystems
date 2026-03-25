@@ -1,1 +1,56 @@
-const OPERION = { BASE_URL: 'https://YOUR-N8N-INSTANCE.com', SECRET: 'YOUR-NETLIFY-WEBHOOK-SECRET', STRIPE: { PUBLISHABLE_KEY: 'pk_live_YOUR_STRIPE_KEY', PRICES: { TIER_1: 'price_XXXX', TIER_2: 'price_XXXX', TIER_3: 'price_XXXX', TIER_4: 'price_XXXX', }, BILLING_PORTAL: 'https://billing.stripe.com/p/login/YOUR_LINK', } }; const form = document.getElementById('onboardForm'); if (form) { form.addEventListener('submit', async (e) => { e.preventDefault(); const data = { name: document.getElementById('name').value, email: document.getElementById('email').value, message: document.getElementById('message').value }; await fetch(`${OPERION.BASE_URL}/webhook/operion/onboard`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-operion-secret': OPERION.SECRET }, body: JSON.stringify(data) }); window.location.href = 'onboard-success.html'; }); } async function loadDashboard() { const el = document.getElementById('dashboard'); if (!el) return; const res = await fetch(`${OPERION.BASE_URL}/webhook/operion/dashboard`, { headers: { 'x-operion-secret': OPERION.SECRET } }); const data = await res.json(); el.textContent = JSON.stringify(data, null, 2); } loadDashboard();
+const OPERION = {
+  BASE_URL: 'https://YOUR-N8N-INSTANCE.com',
+  SECRET: 'YOUR-NETLIFY-WEBHOOK-SECRET'
+};
+
+// Generic Intake Function
+async function sendToOperion(type, payload) {
+  try {
+    const res = await fetch(`${OPERION.BASE_URL}/webhook/operion/${type}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-operion-secret': OPERION.SECRET
+      },
+      body: JSON.stringify({
+        source: 'website',
+        type: type,
+        timestamp: new Date().toISOString(),
+        payload: payload,
+        meta: {
+          user_agent: navigator.userAgent
+        }
+      })
+    });
+    return await res.json();
+  } catch (err) {
+    console.error('Operion error:', err);
+  }
+}
+
+// Onboard Form Submission
+const form = document.getElementById('onboardForm');
+if (form) {
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const data = {
+      name: document.getElementById('name').value,
+      email: document.getElementById('email').value,
+      message: document.getElementById('message').value
+    };
+    await sendToOperion('onboard', data);
+    window.location.href = 'onboard-success.html';
+  });
+}
+
+// Dashboard Loader
+async function loadDashboard() {
+  const el = document.getElementById('dashboard');
+  if (!el) return;
+  const res = await fetch(`${OPERION.BASE_URL}/webhook/operion/dashboard`, {
+    headers: {'x-operion-secret': OPERION.SECRET}
+  });
+  const data = await res.json();
+  el.innerText = JSON.stringify(data, null, 2);
+}
+loadDashboard();
