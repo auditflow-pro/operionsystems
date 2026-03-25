@@ -1,17 +1,23 @@
-# Operion Systems Ltd — Website Repository
+# Operion Systems Ltd — Website
 
-This repository contains the complete front-end website for Operion Systems Ltd.
+Front-end website for Operion Systems Ltd, the managed AI enquiry handling platform.
+
+## Pages
+- index.html – Homepage
+- how-it-works.html – Platform explanation
+- pricing.html – Pricing tiers
+- get-started.html – Business onboarding form
+- dashboard.html – Client dashboard (tier-gated)
+- onboard-success.html – Confirmation page
+- about.html – About & contact
+- legal.html – Legal documents
 
 ## Deployment
-
-- Push to GitHub
-- Import into Netlify
+- Static site (GitHub)
 - No build required
-- Publish directory: root
 
 ## Configuration
-
-Update `app.js` with:
-- n8n BASE_URL
-- webhook SECRET
+Update `app.js`:
+- n8n URL
+- Webhook secret
 - Stripe keys
